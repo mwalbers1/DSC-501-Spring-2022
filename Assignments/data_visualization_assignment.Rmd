@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 ---
 title: "Data Visualization Assignment"
 output: html_document
@@ -8,15 +8,13 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Data Visualization Assignment
-
 1. Select a data file (*.csv or other formats) of your own choosing.
 2. Import the data file as a dataframe.
 3. Create 3 different visualization/plots based on the data. Some visualizations you may want to make include, but are not limited to, bar charts, histograms, scatter plots, box plots. 
 
 ## R Markdown
 
-```{r tidyverse library}
+```{r tidyverse library, echo=FALSE, message=FALSE, warning=FALSE}
 library(tidyverse)
 ```
 
@@ -25,10 +23,10 @@ library(tidyverse)
 df = read.csv('diamonds.csv')
 ```
 
-## Information on df
+## Information on dataframe
 
 ```{r str df 1, echo=FALSE}
-str(df)
+summary(df)
 ```
 
 
@@ -118,126 +116,3 @@ Hadley Wickham & Garrett Grolemund. R for Data Science. Retrieved from  https://
 
 ---
 
-
-=======
----
-title: "Data Visualization Assignment"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## Data Visualization Assignment
-
-1. Select a data file (*.csv or other formats) of your own choosing.
-2. Import the data file as a dataframe.
-3. Create 3 different visualization/plots based on the data. Some visualizations you may want to make include, but are not limited to, bar charts, histograms, scatter plots, box plots. 
-
-## R Markdown
-
-```{r tidyverse library}
-library(tidyverse)
-```
-
-
-```{r diamonds}
-df = read.csv('diamonds.csv')
-```
-
-## Information on df
-
-```{r str df 1, echo=FALSE}
-str(df)
-```
-
-
-## Convert cut, color, clarity to factor data type
-
-```{r convert cut, color, clarity to factor datatype}
-df$cut = factor(df$cut, levels = c('Fair', 'Good', 'Very Good', 'Premium', 'Ideal'))
-df$color = factor(df$color, levels = c('J', 'I', 'H', 'G', 'F', 'E', 'D'))
-df$clarity = factor(df$clarity, levels = c('I1', 'SI2', 'SI1', 'VS2', 'VS1', 'VVS2', 'VVS1', 'IF'))
-```
-
-
-
-```{r str df 2}
-str(df)
-```
-
-## Show distribution of prices
-
-```{r}
-ggplot(df, aes(price)) + 
-  geom_histogram(bins = 30) +
-  scale_x_continuous(breaks = c(0, 2500, 5000, 7500, 10000, 12500, 15000, 17500, 20000))
-```
-
-## Show distribution carat sizes
-
-```{r}
-ggplot(df, aes(carat)) + 
-  geom_histogram(bins=30) +
-  scale_x_continuous(breaks = c(0.05,  0.5,  1.0,  1.5,  2.0,  2.5, 3.0))
-```
-
-## Bar plot on cut categorical variable
-
-```{r}
-ggplot(df, aes(cut)) +
-  geom_bar()
-```
-
-## Bar plot on clarity categorical variable
-
-```{r}
-ggplot(df, aes(clarity)) +
-  geom_bar()
-```
-
-## Bar plot for color categorical variable
-
-```{r}
-ggplot(df, aes(color)) +
-  geom_bar()
-```
-
-## Plot cut and price
-
-```{r}
-ggplot(df, aes(x=cut, y=price)) + 
-  geom_boxplot()
-```
-
-## Plot clarity and price
-
-```{r}
-ggplot(df, aes(x=clarity, y=price)) +
-  geom_boxplot()
-```
-
-## Plot color and price
-
-```{r}
-ggplot(df, aes(x=color, y=price)) +
-  geom_boxplot()
-```
-
-## Plot carat (size of diamond) and its effect on price
-
-```{r}
-ggplot(df, aes(x=carat, y=price)) +
-  geom_point()
-```
-
----
-References
-
-Hadley Wickham & Garrett Grolemund. R for Data Science. Retrieved from  https://r4ds.had.co.nz/exploratory-data-analysis.html
-
----
-
-
->>>>>>> 8860a1b88c78afa6f97ea7a222d3aaa01c9d3c7c
