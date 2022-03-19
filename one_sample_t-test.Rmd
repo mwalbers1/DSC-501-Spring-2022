@@ -1,0 +1,54 @@
+---
+title: "One Sample t-test"
+author: "Michael Albers"
+output: html_document
+---
+
+```{r libraries, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+### Load 2008 Presidential election data for swing states
+```{r load dataset}
+df = read.csv("data/2008_swing_states.csv", sep=",")
+head(df, 10)
+```
+
+### Summary of population
+```{r summary}
+summary(df)
+```
+### Theoretical mean
+```{r theoretical mean}
+mu_param = 325000
+```
+
+
+### Null Hypothesis
+There is no significant difference between the theoretical mean and the sample mean of the number of 2008 swing votes.
+
+### Alternative Hypothesis
+The sample mean of total swing votes is different from the theoretical mean
+
+### Take small random sample of 25 counties (n < 30)
+```{r take small sample}
+sample_counties = sample(df$total_votes, 25, replace = FALSE)
+
+```
+
+### Summary of Sample
+```{r first sample summary}
+summary(sample_counties)
+```
+
+### Perform t-test for one-population mean of total votes
+```{r t-test}
+df_total_votes = na.omit(df$total_votes)
+t.test(df_total_votes, mu = mu_param)
+```
+### Results
+
+The p-value is less than 0.05, so we **<span style="color: red;">can</span>** reject the null hypothesis that the sample mean is equal to the theoretical mean of 325,000 swing votes.
+
+
+
