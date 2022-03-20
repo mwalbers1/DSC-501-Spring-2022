@@ -1,0 +1,95 @@
+---
+title: "Two Sample t-test"
+author: "Michael Albers"
+output: html_document
+---
+
+```{r libraries, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+### T-Test for Two Independent Populations
+
+$$let\ \mu_0 = number\ of\ survivors\ in\ first\ class$$
+$$let\ \mu_1 = number\ of\ survivors\ in\ third\ class$$
+
+
+$$H_0:\mu_0 - \mu_1 = 0$$
+$$H_1:\mu_0 - \mu_1 \neq 0$$
+$$\alpha = 0.05$$
+
+### Load Titanic CSV file into dataframe
+
+```{r load dataframe}
+df = read.csv("Titanic.csv", sep = ",")
+```
+
+### Preview dataframe
+```{r head(df)}
+head(df, 10)
+```
+
+### Group summary statistics
+```{r group summary}
+df %>% 
+  group_by(Class) %>%
+  filter(Survived=="Yes") %>%
+  summarize(mean_freq = mean(Freq))
+```
+
+
+### First class passengers
+```{r first class passengers}
+first_class <- na.omit(filter(df, Class=="1st" & Survived=="Yes"))
+```
+
+### Third class passengers
+```{r third class passengers}
+third_class <- na.omit(filter(df, Class=="3rd" & Survived=="Yes"))
+```
+
+### T-test Case 1: homoscedasticity 
+$$\sigma_1 = \sigma_2$$
+
+```{r t-test case 1}
+t.test(first_class$Freq, third_class$Freq, alternative='two.sided', var.equal=TRUE)
+```
+
+
+### T-test Case 2: heteroscedasticity
+$$\sigma_1 \neq \sigma_2$$
+```{r t-test case 2}
+t.test(first_class$Freq, third_class$Freq, alternative='two.sided', var.equal=FALSE)
+```
+
+
+### Paired T-test for Two Dependent Population Mean difference
+
+"The first- and second- class cabins were much closer to the boat deck (where the lifeboats were located) than third class passengers (see Figure 1) (Frey, 2011, 2015).  First- and second-class cabins were primarily separated by purely social barriers whereas physical gates separated the third-class quarters from other areas of the ship (Levinson, 2012, 151). This of course, made accessing lifeboats much easier for first- and second-class passengers, as time is of the essence on a sinking ship." (Titanic: Explore the disasterous sinking of the R.M.S. Titanic. Retrieved from  https://courses.bowdoin.edu/history-2203-fall-2020-kmoyniha/reflection/)
+
+A pair-wise t-test will be performed next since there appears to be a dependency between first and third class passengers aboard the Titanic.
+
+$$let\ \mu_0 = number\ of\ survivors\ in\ first\ class$$
+$$let\ \mu_1 = number\ of\ survivors\ in\ third\ class$$
+
+$$H_0:\mu_0 - \mu_1 = 0$$
+$$H_1:\mu_0 - \mu_1 \neq 0$$
+$$\alpha = 0.05$$
+
+```{r paired t-test}
+
+t.test(first_class$Freq, third_class$Freq, paired = TRUE)
+
+```
+
+### Summary
+
+Since the p-value is greater than 0.05, the null hypothesis is accepted.  There is no significant difference in mean number of survivors in first and third class cabins aboard the Titanic.
+
+
+**References:**
+
+Titanic: Explore the disasterous sinking of the R.M.S. Titanic. Retrieved from 
+Retrieved from https://courses.bowdoin.edu/history-2203-fall-2020-kmoyniha/reflection/
+
+
