@@ -10,4 +10,7 @@ This 8-week course covers the data analysis process (CRISP-DM, KDD), probability
 <br/>
 [Two-Sample t-test](two_sample_t-test.Rmd)
 <br/>
+[ANOVA hypothesis test](anova-test.Rmd)
+<br/>
+
 
