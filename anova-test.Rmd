@@ -1,0 +1,75 @@
+---
+title: "ANOVA Test"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r tidyverse library, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+
+### Summary
+The dataset contains the mean number of years in school among men between ages of 25 and 
+34 years old by country and year. The countries for United States, Canada, Mexico, and China will be analysed using a one-way ANOVA hypothesis test. This data set is sourced from Gapminder (https://www.gapminder.org/data/).
+
+### Null and Alternative Hypotheses
+
+Let $\mu_1$ = United States mean years in school men 25 to 34
+
+Let $\mu_2$ = Canada mean years in school men 25 to 34
+
+Let $\mu_3$ = Mexico mean years in school men 25 to 34
+
+Let $\mu_4$ = China mean years in school men 25 to 34  
+<br>
+$H_0$: $\mu_1$ = $\mu_2$ = $\mu_3$ = $\mu_4$
+
+$H_1$: At least one sample mean is significantly different from the others.
+
+
+### Read CSV data file
+```{r read csv file}
+df <- read.csv("data/mean_years_in_school_men_25_to_34_years.csv")
+
+head(df)
+```
+
+```{r apply filters to dataframe}
+df_clean <- df %>%
+  filter(geo=='can' | geo=='chn' | geo=='mex' | geo=='usa') %>%
+  filter(time >= 2000)
+
+```
+
+### Show aggregate count by country
+
+```{r aggregate count}
+df_clean %>%
+  group_by(geo) %>%
+  count(name = "count")
+```
+
+### Show aggregate mean years in school by country
+
+```{r show mean by geo}
+df_clean %>%
+  group_by(geo) %>%
+  summarize(mean=mean(mean_years_in_school_men_25_to_34_years, na.rm = TRUE))
+```
+
+### ANOVA Test 
+
+```{r ANOVA test}
+anova <- aov(mean_years_in_school_men_25_to_34_years ~ geo, data = df_clean)
+summary(anova)
+```
+
+### Summary
+
+Since p-value is less than 0.05, we **<span style="color: red;">can</span>** reject the null hypothesis, 
+$H_0$: $\mu_1$ = $\mu_2$ = $\mu_3$ = $\mu_4$. There appears to be evidence suggesting that
+mean years in school for men 25 to 34 differs among the United States, Canada, Mexico, and China.
+<br>
+
