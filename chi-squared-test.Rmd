@@ -1,0 +1,97 @@
+---
+title: "chi-squared test"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r tidyverse library}
+library(tidyverse, echo=FALSE, message=FALSE, warning=FALSE)
+```
+
+
+## Non parametric hypothesis testing
+
+### Load data file
+
+```{r load data file}
+df <- read.csv("data/house-votes-84.data")
+
+colnames(df) <- c("Class Name","handicapped-infants", "water-project-cost-sharing",
+"adoption-of-the-budget-resolution",
+"physician-fee-freeze",
+"el-salvador-aid",
+"religious-groups-in-schools",
+"anti-satellite-test-ban",
+"aid-to-nicaraguan-contras",
+"mx-missile",
+"immigration",
+"synfuels-corporation-cutback",
+"education-spending",
+"superfund-right-to-sue",
+"crime",
+"duty-free-exports",
+"export-administration-act-south-africa")
+
+head(df)
+```
+### Chi-Squared Test for independence of Class Name and handicapped-infants
+
+$$\alpha = 0.05$$
+
+$$H_0: O_{i1} = E_{i1} \ . . . O_{ik} = E_{ik} \  \ i \in \ \{1...r\} $$
+$$k = 2, r = 2$$
+```{r function to convert n and y to 0, 1}
+map_n_y <- function(x) {
+  if (x=="n") 0 else if (x=="y") 1 else x
+}
+
+```
+
+### Filter "?" from handicap infants categorical variable
+
+```{r handicap categorical variable}
+df_handicap <- df %>% 
+  filter(`handicapped-infants`!="?") %>%
+  select("Class Name", "handicapped-infants")
+```
+
+### Convert "n" and "y" to zeros and ones
+
+```{r convert categories "n" and "y" to 0 and 1}
+df_handicap$`handicapped-infants` <- sapply(df_handicap$`handicapped-infants`, map_n_y)
+
+```
+
+### Setup contingency table
+
+```{r convert column to factors}
+df_handicap$`handicapped-infants` <- as.factor(df_handicap$`handicapped-infants`)
+summary(df_handicap)
+```
+
+
+```{r setup contingency table}
+df_table <- table(df_handicap$`Class Name`, df_handicap$`handicapped-infants`)
+colnames(df_table) = c("handicap_infants_no", "handicap_infants_yes")
+
+```
+
+
+```{r display table}
+head(df_table)
+```
+
+### Chi-squared test for independence
+
+```{r chi-square test}
+chisq.test(df_table)
+```
+
+### Summary
+The null hypothesis states that the number of republican or democrat "yes" votes is the same as the number of republic or democrat "no" votes on the handicap infants proposal.
+
+The calculated p-value is less than the alpha value of 0.05. So, we can reject the null hypothesis that the number of republican or democrat "yes" votes is equal to the number of republican or democrat "no" votes.  We can conclude that both republican and democrat voting results on handicap infants are not independent of the issue being voted on. We cannot draw any conclusion on the strength of the difference between republican and democrat groups.
+
+
+
