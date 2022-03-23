@@ -1,18 +1,20 @@
 ---
-title: "chi-squared test"
+title: "Non-parametric hypothesis testing"
 output:
   html_document:
     df_print: paged
 ---
 
-```{r tidyverse library}
-library(tidyverse, echo=FALSE, message=FALSE, warning=FALSE)
+```{r tidyverse library, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
 ```
 
 
-## Non parametric hypothesis testing
+## Chi-Squared Test
 
 ### Load data file
+
+The dataset contains the House of Representatives voting results (yes or no) among democrats and republicans from 1984 on many issues. This chi-squared test focuses on voting for the handicap infant proposal.
 
 ```{r load data file}
 df <- read.csv("data/house-votes-84.data")
@@ -35,12 +37,26 @@ colnames(df) <- c("Class Name","handicapped-infants", "water-project-cost-sharin
 
 head(df)
 ```
-### Chi-Squared Test for independence of Class Name and handicapped-infants
+### Chi-Squared test for independence of political affiliation and handicapped-infant issue
+
+There are two populations within the dataset which are house of representatives and the infant handicap issue to be voted on.  The house of representatives population has two categories, Republican and Democrat. The infant handicap issue population has two categories, Yes or a No vote.
+
+**Null Hypothesis:**
+The number of yes and no votes for the infant handicap issue are independent of political affiliation (democrat or republic). 
+
+**Alternative Hypothesis:**
+The number of yes and no votes for the infant handicap issue are <ins>not</ins> independent of political affiliation (democrat or republican).
+
 
 $$\alpha = 0.05$$
 
 $$H_0: O_{i1} = E_{i1} \ . . . O_{ik} = E_{ik} \  \ i \in \ \{1...r\} $$
+$$H_1: Observations\ (yes/no\ votes) \ \ are \ \ not \ \ independent$$
+
+
+
 $$k = 2, r = 2$$
+
 ```{r function to convert n and y to 0, 1}
 map_n_y <- function(x) {
   if (x=="n") 0 else if (x=="y") 1 else x
@@ -89,9 +105,9 @@ chisq.test(df_table)
 ```
 
 ### Summary
-The null hypothesis states that the number of republican or democrat "yes" votes is the same as the number of republic or democrat "no" votes on the handicap infants proposal.
+The null hypothesis states that the number of "yes/no" votes on the handicap infants proposal are independent of political affiliation (republican or democrat).
 
-The calculated p-value is less than the alpha value of 0.05. So, we can reject the null hypothesis that the number of republican or democrat "yes" votes is equal to the number of republican or democrat "no" votes.  We can conclude that both republican and democrat voting results on handicap infants are not independent of the issue being voted on. We cannot draw any conclusion on the strength of the difference between republican and democrat groups.
+The calculated p-value is less than the alpha value of 0.05. So, we can reject the null hypothesis. We can conclude that both republican and democratic voting results on handicap infants are not independent of the issue being voted on. We cannot draw any conclusion on the strength of the difference between republican and democratic groups.
 
 
 
