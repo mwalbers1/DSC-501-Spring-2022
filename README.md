@@ -12,5 +12,7 @@ This 8-week course covers the data analysis process (CRISP-DM, KDD), probability
 <br/>
 [ANOVA hypothesis test](anova-test.Rmd)
 <br/>
+[Chi-squared test](chi-squared-test.Rmd)
+<br/>
 
 
