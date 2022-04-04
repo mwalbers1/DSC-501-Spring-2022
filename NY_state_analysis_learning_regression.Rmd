@@ -1,0 +1,364 @@
+---
+title: "Effect of COVID-19 on Learning Regression in New York state"
+output:
+  html_document:
+    df_print: paged
+---
+
+Analysis of graduation rate in 2020 school year of 4-year cohort students in NY state 
+
+```{r packages, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(scales)
+```
+
+# Introduction
+
+COVID-19 had a big impact on student learning during the 2020 school year in NY State and throughout
+the United States and the rest of the world.  This analysis will focus on learning regression among school age children in New York State.  We define learning regression as a decline in student learning as measued by gradation rate. This analysis will explore potential explanatory variables that may be associated with graduation rate in the 2020 New York Department of Education database. The dependent variable is graduation rate. The number of free and reduced price lunches among school aged children in New York State will be analyzed for a potential association with graduation rate.
+
+## Dataset
+
+This dataset consists of the New York State graduation rate data and the number of free and reduced price lunches for school-aged children for school year 2019-2020.  The data is sourced from the NY state department of education. In New York state, a student qualifies for free lunch if his/her family income is at or below \$38,000 dollars a year for family size of four or less.  Students from families (size four or less) earning up to \$48,000 per year qualify for reduced price lunches.
+
+
+```{r read data file, echo=FALSE, message=FALSE, warning=FALSE}
+df_ny_school_data <- read.csv('2020_NY_State_graduation_student_ed.csv')
+
+```
+
+```{r Replace nrc_desc with Other where nrc_code is two}
+
+df_ny_school_data$nrc_desc <- ifelse(df_ny_school_data$nrc_code=='2', 'Other', df_ny_school_data$nrc_desc)
+```
+
+
+```{r}
+# str(df_ny_school_data)
+df_ny_school_data[which(df_ny_school_data$nrc_code==2),]
+```
+
+
+### Number of Free and Reduced price lunches by county and nrc_desc 
+
+#### Filter on 4-year cohort and subgroup of 'All Students'
+
+```{r 4-year cohort and subgroup of (All Students) }
+
+df_all_students <- df_ny_school_data %>%
+  filter(membership_code == 9) %>%
+  filter(subgroup_code %in% c(1))
+
+```
+```{r subset columns from df_all_students dataframe}
+
+df_all_students <- subset(df_all_students,
+                          select = c(nrc_code,
+                               nrc_desc, 
+                               county_name, 
+                               nyc_ind, 
+                               enroll_cnt,
+                               grad_cnt,
+                               grad_pct,
+                               ENTITY_CD,
+                               NUM_FREE_LUNCH,
+                               NUM_REDUCED_LUNCH))
+
+```
+
+```{r preview all students dataframe}
+dim(df_all_students)
+str(df_all_students)
+head(df_all_students)
+```
+
+
+#### Filter on 4-year cohort and race/ethnicity groups of Black, Hispanic, Asian, White
+
+```{r filter 4-year cohort (exclude August 2020) and subgroup_code (Black, Hispanic, Asian, White)}
+df_race_ethnicity <- df_ny_school_data %>%
+  filter(membership_code == 9) %>%
+  filter(subgroup_code %in% c(5,6,7,8))
+
+```
+
+
+```{r subset columns in df_race_ethnicity dataframe}
+df_race_ethnicity <- subset(df_race_ethnicity, 
+                    select = c(nrc_code,
+                               nrc_desc, 
+                               county_name, 
+                               nyc_ind, 
+                               subgroup_name,
+                               enroll_cnt,
+                               grad_cnt,
+                               grad_pct,
+                               ENTITY_CD,
+                               NUM_FREE_LUNCH,
+                               NUM_REDUCED_LUNCH))
+```
+
+
+```{r preview race/ethnicity dataframe}
+dim(df_race_ethnicity)
+str(df_race_ethnicity)
+head(df_race_ethnicity)
+
+```
+
+
+```{r}
+df_lc <- df_race_ethnicity %>% 
+    group_by(county_name, nrc_desc, ENTITY_CD) %>%
+    summarize(NUM_FREE_LUNCH = max(NUM_FREE_LUNCH), NUM_REDUCED_LUNCH = max(NUM_REDUCED_LUNCH))
+
+```
+
+
+```{r}
+head(df_lc)
+```
+
+#### Aggregate Lunch counts by county and nrc_desc
+
+```{r}
+df_agg_lc <- df_lc %>%
+  group_by(county_name, nrc_desc) %>%
+  summarize(NUM_FREE_LUNCH = sum(NUM_FREE_LUNCH), NUM_REDUCED_LUNCH = sum(NUM_REDUCED_LUNCH))
+  
+```
+
+```{r}
+head(df_agg_lc)
+```
+
+```{r Sum by nrc_desc}
+
+df_agg_lc %>% 
+  group_by(nrc_desc) %>%
+  summarize(NUM_FREE_LUNCH = sum(NUM_FREE_LUNCH), NUM_REDUCED_LUNCH = sum(NUM_REDUCED_LUNCH))
+
+```
+
+## Univariate Analysis
+
+```{r bar chart for Number of students eligible for free lunch by N/RC}
+ggplot(data = df_agg_lc, aes(x = nrc_desc, y = NUM_FREE_LUNCH, fill=nrc_desc)) +
+  geom_col() +
+  ggtitle("Number of Students eligible for Free Lunches in New York State") +
+  theme(axis.text.x = element_text(angle=60, hjust=1), 
+        legend.position = "none",
+        plot.title = element_text(size=16, face="bold")) +
+  scale_y_continuous(breaks = c(0, 100000, 200000, 300000, 400000, 500000, 600000),
+                     labels = unit_format(unit = "K", scale = 1e-3)) +
+  labs(x="Needs Resource Group", y="No. Free Lunches")
+```
+
+
+```{r bar chart for Number of students eligible for reduced price lunch by N/RC}  
+ggplot(data = df_agg_lc, aes(x = nrc_desc, y = NUM_REDUCED_LUNCH, fill=nrc_desc)) +
+  geom_col() +
+  ggtitle("Number of Students eligible for Reduced Price Lunches in New York State") +
+  theme(axis.text.x = element_text(angle=60, hjust=1), 
+        legend.position = "none",
+        plot.title = element_text(size=16, face="bold")) +
+  scale_y_continuous(breaks = c(0, 5000, 10000, 15000, 20000, 25000, 30000),
+                     labels = unit_format(unit = "K", scale = 1e-3)) +
+  labs(x="Needs Resource Group", y="No. Reduced Lunches")
+```
+
+
+```{r Student enrollment by race/ethnicity and NR/C index}
+ggplot(data = df_race_ethnicity, aes(x = subgroup_name, y = enroll_cnt, fill = nrc_desc)) +
+  geom_col(position='dodge') +
+  ggtitle("Student Enrollment by Race/Ethnicity and Needs Resource Group") +
+  theme(axis.text.x = element_text(angle=60, hjust=1),
+        legend.position = "right",
+        plot.title = element_text(size=16, face="bold")) +
+  labs(x="Race/Ethnicity Group", y="Enrollment Count", fill="Needs Resource Group")
+```
+
+## ANOVA Test for Number of Free Lunches
+
+We see from the bar charts that the average count of free and reduced priced lunches differs among the groups. The ANOVA test will confirm this statistically. Because charter schools comprise less than one percent of the total number of free and reduced price lunches, the charter schools will be excluded.
+
+Let $\mu_1$ = Average Needs mean students eligible for free lunches
+
+Let $\mu_2$ = Low Needs mean students eligible for free lunches
+
+Let $\mu_3$ = NYC mean students eligible for free lunches
+
+Let $\mu_4$ = Other mean students eligible for free lunches 
+
+Let $\mu_5$ = Rural High Needs mean students eligible for free lunches
+
+Let $\mu_6$ = Urban-Suburban High Needs mean students eligible for free lunches
+<br><br>
+$H_0$: $\mu_1$ = $\mu_2$ = $\mu_3$ = $\mu_4$ = $\mu_5$ = $\mu_6$
+
+$H_1$: $\mu_1$ $\neq$ $\mu_2$ $\neq$ $\mu_3$ $\neq$ $\mu_4$ $\neq$ $\mu_5$ $\neq$ $\mu_6$
+
+
+```{r Create dataframe for ANOVA Test}
+
+excl_nrc_desc <- c("Charters")
+df_anova_test <- subset(df_agg_lc, !(nrc_desc %in% excl_nrc_desc)) 
+  
+df_anova_test %>%
+  group_by(nrc_desc) %>%
+  summarize(NUM_FREE_LUNCH = sum(NUM_FREE_LUNCH), NUM_REDUCED_LUNCH = sum(NUM_REDUCED_LUNCH))
+
+```
+
+
+```{r ANOVA Test for Num Free Lunch}
+
+anova_free_lunch = aov(NUM_FREE_LUNCH ~ nrc_desc, data = df_anova_test)
+summary(anova_free_lunch)
+```
+
+The p-value is less than 0.05 so we can reject the null hypothesis that the mean number of free lunches is the same among the Needs Resource groups.
+
+```{r ANOVA Test for Num Reduced Price Lunch}
+
+anova_reduced_lunch = aov(NUM_REDUCED_LUNCH ~ nrc_desc, data = df_anova_test)
+summary(anova_reduced_lunch)
+```
+
+The p-value is less than 0.05 so we can reject the null hypothesis that mean number of reduced price lunches is the same across all of the Need Resource groups.
+
+## Bivariate Exploration
+
+The bivariate scatter plot shows a potential relationship between free and reduced price lunches and the school graduation rate. 
+
+```{r}
+df_grad_pct_plot <- df_all_students %>%
+  filter(!(nrc_desc %in% "Charters"))
+```
+
+### All Needs Resource Groups
+
+
+```{r scatter plot betwen num free lunches and graduation rate}
+
+ggplot(df_grad_pct_plot, aes(x=NUM_FREE_LUNCH, 
+                            y=grad_pct)) +
+  geom_point(aes(col=nrc_desc)) +
+  labs(x="No. Students Eligible Free Lunches", y="Graduation Pct", col="Needs Resource Group")
+
+```
+
+```{r filter dataframe at 50% grad rate, remove NYC}
+
+nrc_excl <- c("NYC", "Low Needs")
+
+df_grad_pct_plot_2 <- df_grad_pct_plot %>%
+  filter(grad_pct >= 0.50) %>%
+  filter(!(nrc_desc %in% nrc_excl))
+
+```
+
+### Exclude Charter and NYC Schools
+
+```{r scatter plot without NYC grad pct 50 percent}
+
+ggplot(df_grad_pct_plot_2, aes(x=NUM_FREE_LUNCH, 
+                            y=grad_pct)) +
+  geom_point(aes(col=nrc_desc), position="jitter") +
+  labs(x="No. Students Eligible Free Lunches", y="Graduation Pct", col="Needs Resource Group")
+```
+
+```{r filter number of free lunches at 10,000 and below}
+
+df_grad_pct_plot_3 <- df_grad_pct_plot_2 %>%
+  filter(NUM_FREE_LUNCH <= 10000)
+
+```
+
+### Average, Rural, and Urban-Suburban
+
+```{r Grad pct v. Num Free Lunches plot 3}
+
+ggplot(df_grad_pct_plot_3, aes(x=NUM_FREE_LUNCH, 
+                            y=grad_pct)) +
+  geom_point(aes(col=nrc_desc), position="jitter") +
+  labs(x="No. Students Eligible Free Lunches", y="Graduation Pct", col="Needs Resource Group")
+```
+
+```{r}
+
+ggplot(df_grad_pct_plot_3, aes(x=NUM_REDUCED_LUNCH, 
+                            y=grad_pct)) +
+  geom_point(aes(col=nrc_desc)) +
+  geom_point(aes(col=nrc_desc), position="jitter") +
+  labs(x="No. Students Eligible Reduced Lunches", y="Graduation Pct", col="Needs Resource Group")
+
+```
+
+## Correlation
+
+A correlation will be calculated between the dependent variable graduation rate and the number of free/reduced price lunches. 
+
+One potential concern for creating a linear regression model is multi-collinearity in that a correlation may exist among the independent variables, number of free lunches and number of reduced price lunches.  To address this concern, a new variable will be created called "Lunch Assist Index" which will be a weighted average between number of free and reduced price lunches.
+
+### First Correlation Test:
+
+There are no filters applied for this correlation
+
+```{r Second Pearson Correlation Test}
+
+df_corr_2 <- df_all_students %>%
+  mutate(LA_INDEX = 0.85 * NUM_FREE_LUNCH + 0.15 * NUM_REDUCED_LUNCH)
+  
+head(df_corr_2)
+
+```
+
+```{r Second correlation test}
+cor.test(~ LA_INDEX + grad_pct, method="pearson", data=df_corr_2)
+
+```
+
+```{r Second linear model}
+model = lm(grad_pct ~ LA_INDEX, data = df_corr_2)
+summary(model)
+```
+
+### Second Correlation Test
+
+Filters applied:
+- graduaton rate >= 0.50
+- Exclude Charters, NYC, and Low Needs NR/C groups
+- Number of Free Lunches up to 10,000
+
+```{r filter all students dataframe}
+
+df_corr <- df_all_students %>%
+  filter(grad_pct >= 0.50) %>%
+  filter(!(nrc_desc %in% c("Charters", "NYC", "Low Needs"))) %>%
+  filter(NUM_FREE_LUNCH <= 10000)
+
+```
+
+### Create index column from Number of Free and Reduced price lunches
+
+```{r Derive new la_index column}
+
+df_corr <- df_corr %>%
+  mutate(LA_INDEX = 0.85 * NUM_FREE_LUNCH + 0.15 * NUM_REDUCED_LUNCH)
+
+head(df_corr)
+```
+### Correlation between Lunch Assist Index and Graduation Pct
+
+```{r Pearson correlation test}
+cor.test(~ LA_INDEX + grad_pct, method="pearson", data=df_corr)
+```
+
+
+```{r linear model}
+model = lm(grad_pct ~ LA_INDEX, data = df_corr)
+summary(model)
+```
+
+
