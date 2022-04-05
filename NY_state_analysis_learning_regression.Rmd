@@ -19,11 +19,11 @@ the United States and the rest of the world.  This analysis will focus on learni
 
 ## Dataset
 
-This dataset consists of the New York State graduation rate data and the number of free and reduced price lunches for school-aged children for school year 2019-2020.  The data is sourced from the NY state department of education. In New York state, a student qualifies for free lunch if his/her family income is at or below \$38,000 dollars a year for family size of four or less.  Students from families (size four or less) earning up to \$48,000 per year qualify for reduced price lunches.
+This dataset consists of the New York State graduation rate data and the number of free and reduced price lunches for school-aged children for school year 2019-2020.  The data is sourced from the New York state department of education. In New York state, a student qualifies for free lunch if his/her family income is at or below \$38,000 dollars a year for family size of four or less.  Students from families (size four or less) earning up to \$48,000 per year qualify for reduced price lunches.
 
 
 ```{r read data file, echo=FALSE, message=FALSE, warning=FALSE}
-df_ny_school_data <- read.csv('2020_NY_State_graduation_student_ed.csv')
+df_ny_school_data <- read.csv('data/2020_NY_State_graduation_student_ed.csv')
 
 ```
 
@@ -33,8 +33,7 @@ df_ny_school_data$nrc_desc <- ifelse(df_ny_school_data$nrc_code=='2', 'Other', d
 ```
 
 
-```{r}
-# str(df_ny_school_data)
+```{r verify nrc_code equal to 2}
 df_ny_school_data[which(df_ny_school_data$nrc_code==2),]
 ```
 
