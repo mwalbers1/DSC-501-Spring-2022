@@ -1,5 +1,5 @@
 ---
-title: "Effect of COVID-19 on Learning Regression in New York state"
+title: "Effect of COVID-19 on Learning Regression in New York State"
 output:
   html_document:
     df_print: paged
@@ -14,8 +14,8 @@ library(scales)
 
 # Introduction
 
-COVID-19 had a big impact on student learning during the 2020 school year in NY State and throughout
-the United States and the rest of the world.  This analysis will focus on learning regression among school age children in New York State.  We define learning regression as a decline in student learning as measued by gradation rate. This analysis will explore potential explanatory variables that may be associated with graduation rate in the 2020 New York Department of Education database. The dependent variable is graduation rate. The number of free and reduced price lunches among school aged children in New York State will be analyzed for a potential association with graduation rate.
+COVID-19 had a big impact on student learning during the 2020 school year in New York State and throughout
+the United States and the rest of the world.  This analysis will focus on learning regression among school-age children in New York State. Learning regression is defined as a decline in student learning as measured by gradation rate. This analysis will explore potential explanatory variables that may be associated with graduation rate in the 2020 New York Department of Education database. The dependent variable is graduation rate. The number of free and reduced price lunches among school-aged children in New York State will be analyzed for a potential association with graduation rate.
 
 ## Dataset
 
@@ -144,7 +144,7 @@ df_agg_lc %>%
 ```{r bar chart for Number of students eligible for free lunch by N/RC}
 ggplot(data = df_agg_lc, aes(x = nrc_desc, y = NUM_FREE_LUNCH, fill=nrc_desc)) +
   geom_col() +
-  ggtitle("Number of Students eligible for Free Lunches in New York State") +
+  ggtitle("Students eligible for Free Lunches in New York State") +
   theme(axis.text.x = element_text(angle=60, hjust=1), 
         legend.position = "none",
         plot.title = element_text(size=16, face="bold")) +
@@ -157,7 +157,7 @@ ggplot(data = df_agg_lc, aes(x = nrc_desc, y = NUM_FREE_LUNCH, fill=nrc_desc)) +
 ```{r bar chart for Number of students eligible for reduced price lunch by N/RC}  
 ggplot(data = df_agg_lc, aes(x = nrc_desc, y = NUM_REDUCED_LUNCH, fill=nrc_desc)) +
   geom_col() +
-  ggtitle("Number of Students eligible for Reduced Price Lunches in New York State") +
+  ggtitle("Students eligible for Reduced Price Lunches in NY State") +
   theme(axis.text.x = element_text(angle=60, hjust=1), 
         legend.position = "none",
         plot.title = element_text(size=16, face="bold")) +
@@ -170,7 +170,7 @@ ggplot(data = df_agg_lc, aes(x = nrc_desc, y = NUM_REDUCED_LUNCH, fill=nrc_desc)
 ```{r Student enrollment by race/ethnicity and NR/C index}
 ggplot(data = df_race_ethnicity, aes(x = subgroup_name, y = enroll_cnt, fill = nrc_desc)) +
   geom_col(position='dodge') +
-  ggtitle("Student Enrollment by Race/Ethnicity and Needs Resource Group") +
+  ggtitle("Race/Ethnicity by Needs Resource Group") +
   theme(axis.text.x = element_text(angle=60, hjust=1),
         legend.position = "right",
         plot.title = element_text(size=16, face="bold")) +
@@ -195,7 +195,7 @@ Let $\mu_6$ = Urban-Suburban High Needs mean students eligible for free lunches
 <br><br>
 $H_0$: $\mu_1$ = $\mu_2$ = $\mu_3$ = $\mu_4$ = $\mu_5$ = $\mu_6$
 
-$H_1$: $\mu_1$ $\neq$ $\mu_2$ $\neq$ $\mu_3$ $\neq$ $\mu_4$ $\neq$ $\mu_5$ $\neq$ $\mu_6$
+$H_1$: At least one group mean is different from the others
 
 
 ```{r Create dataframe for ANOVA Test}
