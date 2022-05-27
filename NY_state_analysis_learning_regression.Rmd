@@ -1,7 +1,7 @@
 ---
 title: "Effect of COVID-19 on Learning Regression in New York State"
 output:
-  html_document:
+  github_document:
     df_print: paged
 ---
 

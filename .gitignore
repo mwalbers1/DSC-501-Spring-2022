@@ -4,9 +4,14 @@
 
 # Session Data files
 .RData
+.Rprofile
+renv/
+renv.lock
+.DS_Store
 
 # User-specific files
 .Ruserdata
+*.Rproj
 
 # Example code in package build process
 *-Ex.R
