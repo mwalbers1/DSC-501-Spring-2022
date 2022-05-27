@@ -1,8 +1,6 @@
 ---
 title: "Effect of COVID-19 on Learning Regression in New York State"
-output:
-  github_document:
-    df_print: paged
+output: github_document
 ---
 
 Analysis of graduation rate in 2020 school year of 4-year cohort students in NY state 
@@ -28,13 +26,7 @@ df_ny_school_data <- read.csv('data/2020_NY_State_graduation_student_ed.csv')
 ```
 
 ```{r Replace nrc_desc with Other where nrc_code is two}
-
 df_ny_school_data$nrc_desc <- ifelse(df_ny_school_data$nrc_code=='2', 'Other', df_ny_school_data$nrc_desc)
-```
-
-
-```{r verify nrc_code equal to 2}
-df_ny_school_data[which(df_ny_school_data$nrc_code==2),]
 ```
 
 
@@ -192,10 +184,11 @@ Let $\mu_4$ = Other mean students eligible for free lunches
 Let $\mu_5$ = Rural High Needs mean students eligible for free lunches
 
 Let $\mu_6$ = Urban-Suburban High Needs mean students eligible for free lunches
-<br><br>
-$H_0$: $\mu_1$ = $\mu_2$ = $\mu_3$ = $\mu_4$ = $\mu_5$ = $\mu_6$
 
-$H_1$: At least one group mean is different from the others
+
+$H_0$ :  $\mu_1$  $\mu_2$  $\mu_3$  $\mu_4$  $\mu_5$  $\mu_6$ are equal
+
+$H_1$ :  At least one group mean is different from the others
 
 
 ```{r Create dataframe for ANOVA Test}
