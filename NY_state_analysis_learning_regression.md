@@ -511,8 +511,13 @@ summary(model)
 
 ### Second Correlation Test
 
-Filters applied: - graduaton rate \>= 0.50 - Exclude Charters, NYC, and
-Low Needs NR/C groups - Number of Free Lunches up to 10,000
+Filters applied:
+
+- graduaton rate \>= 0.50 
+
+- Exclude Charters, NYC, and Low Needs NR/C groups 
+
+- Number of Free Lunches up to 10,000
 
 ``` r
 df_corr <- df_all_students %>%
